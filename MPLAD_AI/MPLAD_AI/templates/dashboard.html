@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h4 class="page-title"><i class="fa-solid fa-gauge-high me-2"></i>Dashboard</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card stat-card"><div class="d-flex justify-content-between"><div><div class="stat-value">{{ summary.total_projects }}</div><div class="stat-label">Total Projects</div></div><i class="fa-solid fa-diagram-project icon-bg"></i></div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card"><div class="d-flex justify-content-between"><div><div class="stat-value">₹{{ summary.total_sanctioned|floatformat:0 }}</div><div class="stat-label">Total Sanctioned</div></div><i class="fa-solid fa-sack-dollar icon-bg"></i></div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card"><div class="d-flex justify-content-between"><div><div class="stat-value">₹{{ summary.total_expenditure|floatformat:0 }}</div><div class="stat-label">Total Expenditure</div></div><i class="fa-solid fa-money-bill-trend-up icon-bg"></i></div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card"><div class="d-flex justify-content-between"><div><div class="stat-value">{{ summary.projects_under_review }}</div><div class="stat-label">Under Review</div></div><i class="fa-solid fa-magnifying-glass icon-bg"></i></div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card"><div class="d-flex justify-content-between"><div><div class="stat-value text-danger">{{ summary.high_risk_projects }}</div><div class="stat-label">High-Risk Projects</div></div><i class="fa-solid fa-triangle-exclamation icon-bg"></i></div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card"><div class="d-flex justify-content-between"><div><div class="stat-value">{{ summary.delayed_projects }}</div><div class="stat-label">Delayed Projects</div></div><i class="fa-solid fa-clock icon-bg"></i></div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card"><div class="d-flex justify-content-between"><div><div class="stat-value">{{ summary.potential_anomalies }}</div><div class="stat-label">Potential Anomalies</div></div><i class="fa-solid fa-radar icon-bg"></i></div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card"><div class="d-flex justify-content-between"><div><div class="stat-value">{{ summary.average_efficiency }}%</div><div class="stat-label">Average Efficiency</div></div><i class="fa-solid fa-gauge icon-bg"></i></div></div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6"><div class="card chart-card"><h6>Projects by State</h6><canvas id="chartByState"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Projects by Category</h6><canvas id="chartByCategory"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Expenditure by State</h6><canvas id="chartExpState"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Monthly Expenditure</h6><canvas id="chartMonthlyExp"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Risk Distribution</h6><canvas id="chartRisk"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Project Status Distribution</h6><canvas id="chartStatus"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Cost Overrun Distribution</h6><canvas id="chartCostOverrun"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Delay Distribution</h6><canvas id="chartDelay"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Contractor Risk Distribution (Top 10)</h6><canvas id="chartContractorRisk"></canvas></div></div>
+  <div class="col-md-6"><div class="card chart-card"><h6>Anomaly Trend</h6><canvas id="chartAnomalyTrend"></canvas></div></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const CHARTS = {{ charts_json|safe }};
+const palette = ['#3182ce','#dd6b20','#38a169','#c53030','#805ad5','#d69e2e','#0987a0','#718096','#2f855a','#b83280'];
+
+function makeBar(id, labels, data, label) {
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels: labels, datasets: [{ label: label, data: data, backgroundColor: '#3182ce' }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+}
+function makePie(id, labels, data) {
+  new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: { labels: labels, datasets: [{ data: data, backgroundColor: palette }] },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+}
+function makeLine(id, labels, data, label) {
+  new Chart(document.getElementById(id), {
+    type: 'line',
+    data: { labels: labels, datasets: [{ label: label, data: data, borderColor: '#3182ce', backgroundColor: 'rgba(49,130,206,0.15)', fill: true, tension: 0.3 }] },
+    options: { plugins: { legend: { display: false } } }
+  });
+}
+
+makeBar('chartByState', Object.keys(CHARTS.projects_by_state), Object.values(CHARTS.projects_by_state), 'Projects');
+makePie('chartByCategory', Object.keys(CHARTS.projects_by_category), Object.values(CHARTS.projects_by_category));
+makeBar('chartExpState', Object.keys(CHARTS.expenditure_by_state), Object.values(CHARTS.expenditure_by_state), 'Expenditure (₹)');
+makeLine('chartMonthlyExp', Object.keys(CHARTS.monthly_expenditure), Object.values(CHARTS.monthly_expenditure), 'Expenditure (₹)');
+makePie('chartRisk', Object.keys(CHARTS.risk_distribution), Object.values(CHARTS.risk_distribution));
+makePie('chartStatus', Object.keys(CHARTS.status_distribution), Object.values(CHARTS.status_distribution));
+makeBar('chartCostOverrun', Object.keys(CHARTS.cost_overrun_distribution), Object.values(CHARTS.cost_overrun_distribution), 'Projects');
+makeBar('chartDelay', Object.keys(CHARTS.delay_distribution), Object.values(CHARTS.delay_distribution), 'Projects');
+makeBar('chartContractorRisk', Object.keys(CHARTS.contractor_risk_distribution), Object.values(CHARTS.contractor_risk_distribution), 'Avg Risk Score');
+makeLine('chartAnomalyTrend', Object.keys(CHARTS.anomaly_trend), Object.values(CHARTS.anomaly_trend), 'Anomalies Detected');
+</script>
+{% endblock %}

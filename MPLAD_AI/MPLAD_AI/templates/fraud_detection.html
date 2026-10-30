@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Fraud Risk{% endblock %}
+{% block content %}
+<h4 class="page-title"><i class="fa-solid fa-magnifying-glass-dollar me-2"></i>Fraud-Risk Dashboard</h4>
+
+<div class="disclaimer-box mb-3">
+  Risk scores identify unusual patterns for further review and do not establish fraud or wrongdoing.
+</div>
+
+<ul class="nav nav-tabs mb-3" id="riskTabs">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#high">High Risk ({{ high|length }})</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#medium">Medium Risk ({{ medium|length }})</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#low">Low Risk ({{ low|length }})</button></li>
+</ul>
+
+<div class="tab-content">
+  {% for bucket_id, bucket in tabs %}{% endfor %}
+  <div class="tab-pane fade show active" id="high">
+    <div class="row g-3">
+      {% for entry in high %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="mb-1">{{ entry.project.project_name|truncatechars:40 }}</h6>
+            <span class="risk-badge severity-High">Fraud Risk {{ entry.prediction.fraud_risk_score|floatformat:0 }}</span>
+          </div>
+          <div class="text-muted small mb-2">{{ entry.project.project_id }} · {{ entry.project.contractor|truncatechars:24 }}</div>
+          <div class="small mb-2"><b>Reasons:</b>
+            <ul class="ps-3 mb-0">{% for r in entry.prediction.reasons|slice:":3" %}<li>{{ r }}</li>{% endfor %}</ul>
+          </div>
+          <a href="/projects/{{ entry.project.project_id }}/" class="btn btn-sm btn-outline-danger mt-auto">Investigate</a>
+        </div>
+      </div>
+      {% empty %}<div class="text-muted">No high-risk projects.</div>{% endfor %}
+    </div>
+  </div>
+  <div class="tab-pane fade" id="medium">
+    <div class="row g-3">
+      {% for entry in medium %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="mb-1">{{ entry.project.project_name|truncatechars:40 }}</h6>
+            <span class="risk-badge severity-Medium">Fraud Risk {{ entry.prediction.fraud_risk_score|floatformat:0 }}</span>
+          </div>
+          <div class="text-muted small mb-2">{{ entry.project.project_id }} · {{ entry.project.contractor|truncatechars:24 }}</div>
+          <a href="/projects/{{ entry.project.project_id }}/" class="btn btn-sm btn-outline-warning mt-auto">Review</a>
+        </div>
+      </div>
+      {% empty %}<div class="text-muted">No medium-risk projects.</div>{% endfor %}
+    </div>
+  </div>
+  <div class="tab-pane fade" id="low">
+    <div class="row g-3">
+      {% for entry in low %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="mb-1">{{ entry.project.project_name|truncatechars:40 }}</h6>
+            <span class="risk-badge severity-Low">Fraud Risk {{ entry.prediction.fraud_risk_score|floatformat:0 }}</span>
+          </div>
+          <div class="text-muted small mb-2">{{ entry.project.project_id }}</div>
+          <a href="/projects/{{ entry.project.project_id }}/" class="btn btn-sm btn-outline-success mt-auto">View</a>
+        </div>
+      </div>
+      {% empty %}<div class="text-muted">No low-risk projects.</div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

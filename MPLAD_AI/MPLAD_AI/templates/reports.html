@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h4 class="page-title"><i class="fa-solid fa-file-lines me-2"></i>Report Generation</h4>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <i class="fa-solid fa-diagram-project fa-2x mb-2" style="color:var(--accent);"></i>
+      <h6>Project Report</h6>
+      <div class="d-flex gap-2 justify-content-center">
+        <a href="/api/reports/?type=project&file_format=csv" class="btn btn-sm btn-outline-primary">CSV</a>
+        <a href="/api/reports/?type=project&file_format=pdf" class="btn btn-sm btn-outline-primary">PDF</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <i class="fa-solid fa-triangle-exclamation fa-2x mb-2" style="color:var(--accent);"></i>
+      <h6>Anomaly Report</h6>
+      <div class="d-flex gap-2 justify-content-center">
+        <a href="/api/reports/?type=anomaly&file_format=csv" class="btn btn-sm btn-outline-primary">CSV</a>
+        <a href="/api/reports/?type=anomaly&file_format=pdf" class="btn btn-sm btn-outline-primary">PDF</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <i class="fa-solid fa-sack-dollar fa-2x mb-2" style="color:var(--accent);"></i>
+      <h6>Financial Report</h6>
+      <div class="d-flex gap-2 justify-content-center">
+        <a href="/api/reports/?type=financial&file_format=csv" class="btn btn-sm btn-outline-primary">CSV</a>
+        <a href="/api/reports/?type=financial&file_format=pdf" class="btn btn-sm btn-outline-primary">PDF</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <i class="fa-solid fa-shield-halved fa-2x mb-2" style="color:var(--accent);"></i>
+      <h6>Risk Report</h6>
+      <div class="d-flex gap-2 justify-content-center">
+        <a href="/api/reports/?type=risk&file_format=csv" class="btn btn-sm btn-outline-primary">CSV</a>
+        <a href="/api/reports/?type=risk&file_format=pdf" class="btn btn-sm btn-outline-primary">PDF</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <i class="fa-solid fa-map fa-2x mb-2" style="color:var(--accent);"></i>
+      <h6>State-wise Report</h6>
+      <div class="d-flex gap-2 justify-content-center">
+        <a href="/api/reports/?type=state&file_format=csv" class="btn btn-sm btn-outline-primary">CSV</a>
+        <a href="/api/reports/?type=state&file_format=pdf" class="btn btn-sm btn-outline-primary">PDF</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <i class="fa-solid fa-landmark fa-2x mb-2" style="color:var(--accent);"></i>
+      <h6>Constituency Report</h6>
+      <div class="d-flex gap-2 justify-content-center">
+        <a href="/api/reports/?type=constituency&file_format=csv" class="btn btn-sm btn-outline-primary">CSV</a>
+        <a href="/api/reports/?type=constituency&file_format=pdf" class="btn btn-sm btn-outline-primary">PDF</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

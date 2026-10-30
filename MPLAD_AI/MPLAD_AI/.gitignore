@@ -1,0 +1,8 @@
+django_internal.sqlite3
+staticfiles/
+__pycache__/
+*.pyc
+venv/
+.env
+ml_engine/models/*.joblib
+!ml_engine/models/.gitkeep

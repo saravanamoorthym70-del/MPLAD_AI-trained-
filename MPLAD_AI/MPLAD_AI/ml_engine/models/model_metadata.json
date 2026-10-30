@@ -1,0 +1,82 @@
+{
+  "model_name": "MPLAD_AI_ensemble",
+  "model_version": "v2.0-leakage-safe",
+  "training_date_utc": "2026-09-29T09:48:26.178624+00:00",
+  "training_dataset": "sample_mplad_data.csv",
+  "record_count": 1215,
+  "feature_count": 9,
+  "delay_features": [
+    "project_category",
+    "implementing_agency",
+    "contractor",
+    "state",
+    "sanctioned_amount",
+    "expenditure_ratio",
+    "completion_percentage",
+    "project_duration"
+  ],
+  "excluded_from_delay_features": [
+    "delay_days"
+  ],
+  "algorithms": [
+    "IsolationForest",
+    "LocalOutlierFactor(runtime)",
+    "GradientBoostingClassifier"
+  ],
+  "delay_target": "delay_days > 15",
+  "validation": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratified": true
+  },
+  "delay_probability_threshold": 0.6000000000000001,
+  "high_precision_target": 0.9,
+  "holdout_metrics": {
+    "accuracy": 0.8106995884773662,
+    "precision": 0.90625,
+    "recall": 0.4027777777777778,
+    "f1": 0.5576923076923077,
+    "roc_auc": 0.7836663417803769,
+    "average_precision": 0.6844660291805088,
+    "support": 243,
+    "positive_predictions": 32,
+    "confusion_matrix": [
+      [
+        168,
+        3
+      ],
+      [
+        43,
+        29
+      ]
+    ],
+    "classification_report": {
+      "0": {
+        "precision": 0.7962085308056872,
+        "recall": 0.9824561403508771,
+        "f1-score": 0.8795811518324608,
+        "support": 171.0
+      },
+      "1": {
+        "precision": 0.90625,
+        "recall": 0.4027777777777778,
+        "f1-score": 0.5576923076923077,
+        "support": 72.0
+      },
+      "accuracy": 0.8106995884773662,
+      "macro avg": {
+        "precision": 0.8512292654028436,
+        "recall": 0.6926169590643274,
+        "f1-score": 0.7186367297623842,
+        "support": 243.0
+      },
+      "weighted avg": {
+        "precision": 0.8288134105669651,
+        "recall": 0.8106995884773662,
+        "f1-score": 0.7842066794946377,
+        "support": 243.0
+      }
+    }
+  },
+  "warning": "Metrics are based on the supplied synthetic dataset and should be revalidated on official SIH/MPLADS data."
+}

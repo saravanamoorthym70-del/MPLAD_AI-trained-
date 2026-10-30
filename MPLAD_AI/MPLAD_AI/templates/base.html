@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}MPLAD AI{% endblock %} | MPLAD AI Monitor</title>
+<link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link href="/static/css/style.css" rel="stylesheet">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+{% if request.session.user_id %}
+<nav class="navbar navbar-expand topbar">
+  <div class="container-fluid">
+    <button class="btn btn-link text-white d-lg-none" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+    <a class="navbar-brand fw-bold" href="/dashboard/"><i class="fa-solid fa-shield-halved me-2"></i>MPLAD AI</a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="text-white-50 small d-none d-md-inline">{{ request.session.full_name|default:request.session.username }} · <span class="badge bg-light text-dark">{{ request.session.role }}</span></span>
+      <a href="/logout/" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+  </div>
+</nav>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="/dashboard/"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link {% if '/projects/' in request.path %}active{% endif %}" href="/projects/"><i class="fa-solid fa-diagram-project"></i> Projects</a></li>
+      <li class="nav-item"><a class="nav-link {% if '/anomalies/' in request.path %}active{% endif %}" href="/anomalies/"><i class="fa-solid fa-triangle-exclamation"></i> Anomaly Detection</a></li>
+      <li class="nav-item"><a class="nav-link {% if '/fraud-risk/' in request.path %}active{% endif %}" href="/fraud-risk/"><i class="fa-solid fa-magnifying-glass-dollar"></i> Fraud Risk</a></li>
+      <li class="nav-item"><a class="nav-link {% if '/analytics/' in request.path %}active{% endif %}" href="/analytics/"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+      <li class="nav-item"><a class="nav-link {% if '/reports/' in request.path %}active{% endif %}" href="/reports/"><i class="fa-solid fa-file-lines"></i> Reports</a></li>
+      <li class="nav-item"><a class="nav-link {% if '/upload/' in request.path %}active{% endif %}" href="/upload/"><i class="fa-solid fa-upload"></i> Upload Data</a></li>
+      <li class="nav-item mt-3"><span class="sidebar-heading">Account</span></li>
+      <li class="nav-item"><a class="nav-link" href="/admin/"><i class="fa-solid fa-users-gear"></i> User Management</a></li>
+    </ul>
+  </aside>
+  <main class="content">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+{% block bare_content %}{% endblock %}
+{% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="/static/js/main.js"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

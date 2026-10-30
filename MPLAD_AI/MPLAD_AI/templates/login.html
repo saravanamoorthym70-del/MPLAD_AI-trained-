@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block bare_content %}
+<div class="login-wrapper">
+  <div class="card login-card p-4">
+    <div class="text-center mb-3">
+      <i class="fa-solid fa-shield-halved fa-2x" style="color: var(--brand-blue);"></i>
+      <h4 class="fw-bold mt-2 mb-0" style="color: var(--brand-blue);">MPLAD AI</h4>
+      <div class="text-muted small">Anomaly &amp; Fraud-Risk Monitoring</div>
+    </div>
+    {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label small">Username</label>
+        <input type="text" name="username" class="form-control" required autofocus>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100" style="background: var(--brand-blue); border-color: var(--brand-blue);">Sign In</button>
+    </form>
+    <div class="text-center text-muted small mt-3">
+      Demo logins: <code>admin / Admin@123</code>, <code>analyst / Analyst@123</code>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<h4 class="page-title"><i class="fa-solid fa-chart-line me-2"></i>District / State-Level Analytics</h4>
+
+<div class="card p-3 mb-3">
+  <h6 class="fw-bold mb-3">Geographical Overview</h6>
+  <div id="analyticsMap" style="height:380px;border-radius:8px;"></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card p-3">
+      <h6 class="fw-bold">State-Level Summary</h6>
+      <table class="table table-sm">
+        <thead><tr><th>State</th><th>Projects</th><th>Sanctioned</th><th>Expenditure</th><th>High Risk</th></tr></thead>
+        <tbody>
+          {% for state, s in states.items %}
+          <tr><td>{{ state }}</td><td>{{ s.projects }}</td><td>₹{{ s.sanctioned|floatformat:0 }}</td><td>₹{{ s.expenditure|floatformat:0 }}</td><td>{{ s.high_risk }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3">
+      <h6 class="fw-bold">Category-Level Summary</h6>
+      <table class="table table-sm">
+        <thead><tr><th>Category</th><th>Projects</th><th>Sanctioned</th><th>Expenditure</th></tr></thead>
+        <tbody>
+          {% for cat, c in categories.items %}
+          <tr><td>{{ cat }}</td><td>{{ c.projects }}</td><td>₹{{ c.sanctioned|floatformat:0 }}</td><td>₹{{ c.expenditure|floatformat:0 }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
+{% endblock %}
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
+<script>
+async function loadMap() {
+  const map = L.map('analyticsMap').setView([22.5, 80.0], 5);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri | OpenStreetMap contributors'
+  }).addTo(map);
+  const cluster = L.markerClusterGroup();
+
+  const res = await fetch('/api/projects/?page_size=1000', { headers: { 'Accept': 'application/json' } });
+  const data = await res.json();
+  (data.results || []).forEach(p => {
+    if (!p.latitude || !p.longitude) return;
+    const marker = L.circleMarker([p.latitude, p.longitude], { radius: 6, color: '#3182ce', fillOpacity: 0.7 });
+    marker.bindPopup(`<b>${p.project_name}</b><br>${p.district}, ${p.state}<br>Category: ${p.project_category}`);
+    cluster.addLayer(marker);
+  });
+  map.addLayer(cluster);
+}
+loadMap();
+</script>
+{% endblock %}

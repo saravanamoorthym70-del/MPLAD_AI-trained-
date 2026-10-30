@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}{{ project.project_name }}{% endblock %}
+{% block content %}
+<a href="/projects/" class="text-decoration-none small"><i class="fa-solid fa-arrow-left"></i> Back to Projects</a>
+<h4 class="page-title mt-2">{{ project.project_name }} <span class="text-muted small">({{ project.project_id }})</span></h4>
+
+<div class="row g-3">
+  <div class="col-md-8">
+    <div class="card p-3 mb-3">
+      <h6 class="fw-bold">Project Information</h6>
+      <div class="row small">
+        <div class="col-6 mb-2"><span class="text-muted">MP Name</span><br>{{ project.mp_name }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Constituency</span><br>{{ project.constituency }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">District / State</span><br>{{ project.district }}, {{ project.state }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Category</span><br>{{ project.project_category }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Status</span><br>{{ project.project_status }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Completion</span><br>{{ project.completion_percentage }}%</div>
+      </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <h6 class="fw-bold">Financial Information</h6>
+      <div class="row small">
+        <div class="col-6 mb-2"><span class="text-muted">Sanctioned Amount</span><br>₹{{ project.sanctioned_amount|floatformat:0 }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Released Amount</span><br>₹{{ project.released_amount|floatformat:0 }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Expenditure</span><br>₹{{ project.expenditure_amount|floatformat:0 }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Estimated Cost</span><br>₹{{ project.estimated_cost|floatformat:0 }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Actual Cost</span><br>₹{{ project.actual_cost|floatformat:0 }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Cost Overrun</span><br>{{ project.cost_overrun|floatformat:2 }}</div>
+      </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <h6 class="fw-bold">Timeline</h6>
+      <div class="row small">
+        <div class="col-4"><span class="text-muted">Start Date</span><br>{{ project.start_date }}</div>
+        <div class="col-4"><span class="text-muted">Expected Completion</span><br>{{ project.expected_completion_date }}</div>
+        <div class="col-4"><span class="text-muted">Actual Completion</span><br>{{ project.actual_completion_date|default:"—" }}</div>
+        <div class="col-4 mt-2"><span class="text-muted">Delay (days)</span><br>{{ project.delay_days }}</div>
+        <div class="col-4 mt-2"><span class="text-muted">Duration (days)</span><br>{{ project.project_duration }}</div>
+      </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <h6 class="fw-bold">Contractor &amp; Beneficiary Information</h6>
+      <div class="row small">
+        <div class="col-6 mb-2"><span class="text-muted">Implementing Agency</span><br>{{ project.implementing_agency }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Contractor</span><br>{{ project.contractor }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Beneficiaries</span><br>{{ project.beneficiaries }}</div>
+        <div class="col-6 mb-2"><span class="text-muted">Cost / Beneficiary</span><br>₹{{ project.cost_per_beneficiary|floatformat:0 }}</div>
+      </div>
+    </div>
+
+    <div class="card p-3">
+      <h6 class="fw-bold">Location</h6>
+      <div class="small text-muted mb-2">Lat: {{ project.latitude }}, Lon: {{ project.longitude }}</div>
+      {% if project.latitude and project.longitude %}
+      <div id="miniMap" style="height:260px;border-radius:8px;"></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card p-3 mb-3 text-center">
+      <h6 class="fw-bold">ML Risk Analysis</h6>
+      {% if prediction %}
+        <div class="display-6 fw-bold" style="color: var(--brand-blue);">{{ prediction.overall_risk_score|floatformat:0 }}<span class="fs-6 text-muted">/100</span></div>
+        <span class="risk-badge risk-{{ prediction.risk_level }} d-inline-block mb-2">Risk Level: {{ prediction.risk_level }}</span>
+        <div class="text-start small mt-2">
+          <div class="d-flex justify-content-between"><span>Anomaly Score</span><b>{{ prediction.anomaly_probability|floatformat:0 }}</b></div>
+          <div class="d-flex justify-content-between"><span>Fraud Risk</span><b>{{ prediction.fraud_risk_score|floatformat:0 }}</b></div>
+          <div class="d-flex justify-content-between"><span>Inefficiency</span><b>{{ prediction.inefficiency_score|floatformat:0 }}</b></div>
+          <div class="d-flex justify-content-between"><span>Delay Risk</span><b>{{ prediction.delay_risk_score|floatformat:0 }}</b></div>
+        </div>
+      {% else %}
+        <p class="text-muted small">Not yet analyzed.</p>
+        <form method="post" action="#"><button class="btn btn-sm btn-primary" disabled>Run Analysis (use /api/ml/analyze/)</button></form>
+      {% endif %}
+    </div>
+
+    {% if prediction %}
+    <div class="card p-3 mb-3">
+      <h6 class="fw-bold">Risk Factors (Explainable AI)</h6>
+      {% for factor, value in prediction.contributing_factors.items %}
+        <div class="mb-2">
+          <div class="d-flex justify-content-between small"><span>{{ factor }}</span><span>+{{ value }}</span></div>
+          <div class="factor-bar-track"><div class="factor-bar-fill" style="width: {{ value }}%;"></div></div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="card p-3 mb-3">
+      <h6 class="fw-bold">Detected Patterns</h6>
+      <ul class="small ps-3 mb-0">
+        {% for reason in prediction.reasons %}<li>{{ reason }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="card p-3">
+      <h6 class="fw-bold">Recommended Review Actions</h6>
+      <ul class="small ps-3 mb-0">
+        {% if prediction and prediction.risk_level == "Critical" %}
+          <li>Escalate to Auditor for immediate review</li>
+          <li>Cross-verify expenditure with transaction records</li>
+          <li>Request site inspection / physical verification</li>
+        {% elif prediction and prediction.risk_level == "High" %}
+          <li>Flag for review by Analyst / Auditor</li>
+          <li>Compare with similar projects in the category</li>
+        {% else %}
+          <li>No urgent action required — routine monitoring</li>
+        {% endif %}
+      </ul>
+      <div class="disclaimer-box mt-2">Risk scores identify unusual patterns for further review and do not establish fraud or wrongdoing.</div>
+    </div>
+  </div>
+</div>
+
+{% if anomalies %}
+<div class="card p-3 mt-3">
+  <h6 class="fw-bold">Anomaly Detection History</h6>
+  <table class="table table-sm">
+    <thead><tr><th>Anomaly ID</th><th>Type</th><th>Score</th><th>Severity</th><th>Detected</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for a in anomalies %}
+      <tr>
+        <td>{{ a.anomaly_id }}</td><td>{{ a.anomaly_type }}</td><td>{{ a.anomaly_score|floatformat:0 }}</td>
+        <td><span class="risk-badge severity-{{ a.severity }}">{{ a.severity }}</span></td>
+        <td>{{ a.detected_at|date:"d M Y" }}</td><td>{{ a.review_status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+{% endblock %}
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+{% if project.latitude and project.longitude %}
+<script>
+  const map = L.map('miniMap').setView([{{ project.latitude }}, {{ project.longitude }}], 12);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri | OpenStreetMap contributors'
+  }).addTo(map);
+  L.marker([{{ project.latitude }}, {{ project.longitude }}]).addTo(map).bindPopup("{{ project.project_name|escapejs }}");
+</script>
+{% endif %}
+{% endblock %}

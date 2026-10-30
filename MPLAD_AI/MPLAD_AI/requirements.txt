@@ -1,0 +1,14 @@
+Django==4.2.15
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1
+mongoengine==0.28.2
+pymongo==4.8.0
+django-cors-headers==4.4.0
+python-dotenv==1.0.1
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.5.1
+scipy==1.13.1
+joblib==1.4.2
+Faker==26.0.0
+reportlab==4.2.2

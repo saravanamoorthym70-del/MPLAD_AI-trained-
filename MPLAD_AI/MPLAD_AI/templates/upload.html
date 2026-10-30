@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Upload Data{% endblock %}
+{% block content %}
+<h4 class="page-title"><i class="fa-solid fa-upload me-2"></i>Upload MPLAD Dataset</h4>
+
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+
+<div class="card p-4" style="max-width:600px;">
+  <p class="text-muted small">Upload a CSV matching the MPLAD dataset schema. Records are validated, cleaned,
+  feature-engineered, and stored in MongoDB. ML analysis (anomaly detection, fraud risk, inefficiency, delay
+  prediction, duplicate detection) runs automatically after a successful import.</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="file" accept=".csv" class="form-control mb-3" required>
+    <button class="btn btn-primary" style="background:var(--brand-blue);border-color:var(--brand-blue);">
+      <i class="fa-solid fa-upload me-1"></i> Upload &amp; Analyze
+    </button>
+  </form>
+</div>
+
+{% if result %}
+<div class="card p-3 mt-3" style="max-width:600px;">
+  <h6 class="fw-bold">Import Result</h6>
+  {% if result.success %}
+    <p class="mb-1">Total rows: <b>{{ result.total_rows }}</b></p>
+    <p class="mb-1">Inserted: <b class="text-success">{{ result.inserted }}</b></p>
+    <p class="mb-1">Updated: <b class="text-primary">{{ result.updated }}</b></p>
+    <p class="mb-1">Validation errors: <b class="text-danger">{{ result.error_count }}</b></p>
+    {% if result.ml_analysis %}
+      <hr>
+      <p class="mb-1">ML analysis completed on <b>{{ result.ml_analysis.analyzed }}</b> projects.</p>
+      <p class="mb-1">Potential duplicate pairs found: <b>{{ result.ml_analysis.duplicate_pairs_found }}</b></p>
+      <a href="/dashboard/" class="btn btn-sm btn-outline-primary mt-2">Go to Dashboard</a>
+    {% endif %}
+  {% else %}
+    <p class="text-danger">{{ result.error }}</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
